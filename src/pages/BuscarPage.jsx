@@ -1,4 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
+import useFetch from "../hooks/useFetch"
+import useDebounce from "../hooks/useDebounce";
+import useLocalStorage from "../hooks/useLocalStorage";
 import { adaptarPelicula } from "../utils/adaptar";
 import Cargando from "../components/Cargando/Cargando";
 import MensajeError from "../components/MensajeError/MensajeError";
@@ -9,36 +12,28 @@ import Buscador from "../components/Buscador/Buscador";
 const API_KEY = import.meta.env.VITE_OMDB_KEY;
 
 function BuscarPage() {
-    const [peliculas, setPeliculas] = useState([]);
-    const [cargando, setCargando] = useState(true);
-    const [error, setError] = useState(null);
-    const [guardados, setGuardados] = useState([]);
+    const [guardados, setGuardados] = useLocalStorage("guardados", []);
     const [editando, setEditando] = useState(null);
     const [seleccionada, setSeleccionada] = useState(null);
     const [busqueda, setBusqueda] = useState("");
+    
+    const busquedaRetrasada = useDebounce(busqueda, 600);
 
-    useEffect(() => {
-        const cargar = async () => {
-            try {
-                const res = await fetch(
-                    `https://www.omdbapi.com/?apikey=${API_KEY}&s=batman`
-                );
-                if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
-                const data = await res.json();
-                if (data.Response === "False") throw new Error(data.Error);
-                setPeliculas(data.Search.map(adaptarPelicula));
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setCargando(false);
-            }
-        };
-        cargar();
-    }, []);
+    const termino = 
+        busquedaRetrasada.trim().length >= 3 ? busquedaRetrasada.trim() : "batman";
+    const url = `https://www.omdbapi.com/?apikey=${API_KEY}&s=${encodeURIComponent(termino)}`;
 
-    const filtradas = peliculas.filter((p) =>
-        p.Title.toLowerCase().includes(busqueda.toLowerCase())
+    const { datos, cargando, error} = useFetch(url);
+    const peliculas = useMemo(
+        () => (datos?.Search ? datos.Search.map(adaptarPelicula) : []),
+        [datos]
     );
+
+    const errorApi = 
+        error ||
+            (datos?.Response === "False" && datos.Error !== "Movie not found!"
+                ? datos.Error
+                : null);
 
     const seleccionar = (pelicula) => {
         const yaGuardada = guardados.some((p) => p.imdbID === pelicula.imdbID);
@@ -61,8 +56,12 @@ function BuscarPage() {
         );
     };
 
-    if (cargando) return <Cargando />;
-    if (error) return <MensajeError mensaje={error} />;
+    const mostrarResultados = () => {    
+        if (cargando) return <Cargando />;
+        if (errorApi) return <MensajeError mensaje={errorApi} />;
+        if (peliculas.length === 0) return <p>Sin resultados</p>;
+        return <ListaPeliculas peliculas={peliculas} onGuardar={seleccionar} />;
+    };
 
     return (
         <div>
@@ -70,11 +69,7 @@ function BuscarPage() {
 
             <Buscador valor={busqueda} onBuscar={setBusqueda} />
 
-            {filtradas.length === 0 ? (
-                <p>Sin resultados.</p>
-            ) : (
-                <ListaPeliculas peliculas={filtradas} onGuardar={seleccionar} />
-            )}
+            {mostrarResultados()}
 
             {seleccionada && (
                 <FormularioNota

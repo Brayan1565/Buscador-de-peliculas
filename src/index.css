@@ -1,0 +1,18 @@
+.tarjeta img {
+  width: 150px;      /* ancho fijo; sube o baja este número a tu gusto */
+  height: auto;      /* el alto se ajusta solo para no deformar la imagen */
+  border-radius: 8px; /* esquinas redondeadas (opcional) */
+}
+
+.peliculas {
+  display: flex;      /* pone las tarjetas en fila */
+  flex-wrap: wrap;    /* si no caben, pasan a la siguiente línea */
+  gap: 16px;          /* espacio entre tarjetas */
+}
+
+.tarjeta {
+  width: 170px;       /* ancho de cada tarjeta */
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}

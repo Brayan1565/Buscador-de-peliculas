@@ -1,20 +1,19 @@
 import TarjetaPelicula from "../TarjetaPelicula/TarjetaPelicula";
 
-function ListaPeliculas({ peliculas }) {
+function ListaPeliculas({ peliculas, onGuardar, onEliminar, onEditar }) {
     return (
-        <>
-            <div className="Peliculas">
-                {peliculas.map((pelicula) => (
-                    <TarjetaPelicula
-                        key={pelicula.imdbID}
-                        Title={pelicula.Title}
-                        Year={pelicula.Year}
-                        Poster={pelicula.Poster}
-                    />
-                ))}
-            </div>
-        </>
-    )
+        <div className="peliculas">
+            {peliculas.map((pelicula) => (
+                <TarjetaPelicula
+                    key={pelicula.imdbID}
+                    pelicula={pelicula}
+                    onGuardar={onGuardar}
+                    onEliminar={onEliminar}
+                    onEditar={onEditar}
+                />
+            ))}
+        </div>
+    );
 }
 
 export default ListaPeliculas;

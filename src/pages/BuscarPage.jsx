@@ -1,20 +1,40 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { adaptarPelicula } from "../utils/adaptar";
+import Cargando from "../components/Cargando/Cargando";
+import MensajeError from "../components/MensajeError/MensajeError";
 import ListaPeliculas from "../components/ListaPeliculas/ListaPeliculas";
 import FormularioNota from "../components/FormularioNota/FormularioNota";
 import Buscador from "../components/Buscador/Buscador";
 
-const peliculasEjemplo = [
-    { imdbID: "1", Title: "Película Uno", Year: "2000", Poster: "/rocky.jpg" },
-    { imdbID: "2", Title: "Película Dos", Year: "2005", Poster: "/rocky.jpg" },
-    { imdbID: "3", Title: "Película Tres", Year: "2010", Poster: "/rocky.jpg" },
-];
+const API_KEY = import.meta.env.VITE_OMDB_KEY;
 
 function BuscarPage() {
-    const [peliculas] = useState(peliculasEjemplo);
+    const [peliculas, setPeliculas] = useState([]);
+    const [cargando, setCargando] = useState(true);
+    const [error, setError] = useState(null);
     const [guardados, setGuardados] = useState([]);
     const [editando, setEditando] = useState(null);
     const [seleccionada, setSeleccionada] = useState(null);
     const [busqueda, setBusqueda] = useState("");
+
+    useEffect(() => {
+        const cargar = async () => {
+            try {
+                const res = await fetch(
+                    `https://www.omdbapi.com/?apikey=${API_KEY}&s=batman`
+                );
+                if (!res.ok) throw new Error(`Error HTTP ${res.status}`);
+                const data = await res.json();
+                if (data.Response === "False") throw new Error(data.Error);
+                setPeliculas(data.Search.map(adaptarPelicula));
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setCargando(false);
+            }
+        };
+        cargar();
+    }, []);
 
     const filtradas = peliculas.filter((p) =>
         p.Title.toLowerCase().includes(busqueda.toLowerCase())
@@ -40,6 +60,9 @@ function BuscarPage() {
             )
         );
     };
+
+    if (cargando) return <Cargando />;
+    if (error) return <MensajeError mensaje={error} />;
 
     return (
         <div>

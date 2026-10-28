@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
 import useFetch from "../hooks/useFetch"
 import useDebounce from "../hooks/useDebounce";
-import useLocalStorage from "../hooks/useLocalStorage";
 import { adaptarPelicula } from "../utils/adaptar";
 import Cargando from "../components/Cargando/Cargando";
 import MensajeError from "../components/MensajeError/MensajeError";
@@ -11,9 +10,7 @@ import Buscador from "../components/Buscador/Buscador";
 
 const API_KEY = import.meta.env.VITE_OMDB_KEY;
 
-function BuscarPage() {
-    const [guardados, setGuardados] = useLocalStorage("guardados", []);
-    const [editando, setEditando] = useState(null);
+function BuscarPage({ guardados, setGuardados }) {
     const [seleccionada, setSeleccionada] = useState(null);
     const [busqueda, setBusqueda] = useState("");
     
@@ -24,6 +21,7 @@ function BuscarPage() {
     const url = `https://www.omdbapi.com/?apikey=${API_KEY}&s=${encodeURIComponent(termino)}`;
 
     const { datos, cargando, error} = useFetch(url);
+    
     const peliculas = useMemo(
         () => (datos?.Search ? datos.Search.map(adaptarPelicula) : []),
         [datos]
@@ -43,17 +41,6 @@ function BuscarPage() {
     const guardar = (nota) => {
         setGuardados((prev) => [...prev, { ...seleccionada, nota }]);
         setSeleccionada(null);
-    };
-
-    const eliminar = (id) => {
-        setGuardados((prev) => prev.filter((p) => p.imdbID !== id));
-    };
-
-    const editarNota = (id, nuevaNota) => {
-        setGuardados((prev) =>
-            prev.map((p) => p.imdbID === id ? { ...p, nota: nuevaNota } : p
-            )
-        );
     };
 
     const mostrarResultados = () => {    
@@ -76,30 +63,6 @@ function BuscarPage() {
                     titulo={seleccionada.Title}
                     onSubmitNota={guardar}
                     onCancelar={() => setSeleccionada(null)}
-                />
-            )}
-
-            {editando && (
-                <FormularioNota
-                    key={editando.imdbID}
-                    titulo={editando.Title}
-                    notaInicial={editando.nota}
-                    onSubmitNota={(nuevaNota) => {
-                        editarNota(editando.imdbID, nuevaNota);
-                        setEditando(null);
-                    }}
-                    onCancelar={() => setEditando(null)}
-                />
-            )}
-
-            <h2>Mis guardados</h2>
-            {guardados.length === 0 ? (
-                <p>Aún no has guardado películas.</p>
-            ) : (
-                <ListaPeliculas
-                    peliculas={guardados}
-                    onEliminar={eliminar}
-                    onEditar={setEditando}
                 />
             )}
         </div>

@@ -16,3 +16,14 @@
   flex-wrap: wrap;    
   gap: 16px;         
 }
+
+.navbar {
+  display: flex;
+  gap: 16px;
+  padding: 12px;
+}
+
+.navbar a.active {
+  font-weight: bold;
+  border-bottom: 2px solid;
+}

@@ -1,13 +1,16 @@
+import { Link } from "react-router";
+
 function TarjetaPelicula({ pelicula, onGuardar, onEliminar, onEditar }) {
     return (
         <div className="tarjeta">
-
             <h2>{pelicula.Title}</h2>
             <p>{pelicula.Year}</p>
             <img src={pelicula.Poster} alt={pelicula.Title} />
 
-
             {pelicula.nota && <p>Nota: {pelicula.nota}</p>}
+
+            <Link to={`/peliculas/${pelicula.imdbID}`}>Ver detalle</Link>
+
             {onGuardar && (
                 <button onClick={() => onGuardar(pelicula)}>Guardar</button>
             )}

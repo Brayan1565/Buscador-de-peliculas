@@ -6,7 +6,7 @@ function useFetch(url) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
-        if (!url) retun;
+        if (!url) return;
         let cancelado = false;
         const cargar = async () => {
             setCargando(true);
@@ -17,7 +17,7 @@ function useFetch(url) {
                 const json = await res.json();
                 if (!cancelado) setDatos(json);
             } catch (err) {
-                if (!cancelado) setDatos(err.message);
+                if (!cancelado) setError(err.message);
             } finally {
                 if (!cancelado) setCargando(false);
             }

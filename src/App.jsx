@@ -1,3 +1,5 @@
+import { useContext } from "react";
+import { TemaContext } from "./context/TemaContext";
 import { Routes, Route } from "react-router";
 import useLocalStorage from "./hooks/useLocalStorage";
 import Navbar from "./components/Navbar/Navbar";
@@ -10,8 +12,10 @@ import NotFoundPage from "./pages/NotFoundPage";
 function App() {
   const [guardados, setGuardados] = useLocalStorage("guardados", []);
 
+  const { tema } = useContext(TemaContext);
+
   return (
-    <>
+    <div className={`app ${tema}`}>
       <Navbar />
       <Routes>
         <Route path="/" element={<InicioPage />} />
@@ -26,7 +30,7 @@ function App() {
         />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
-    </>
+    </div>
   );
 }
 

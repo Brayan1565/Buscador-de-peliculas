@@ -17,6 +17,29 @@
   gap: 16px;         
 }
 
+.app {
+  min-height: 100vh;
+  padding: 8px;
+}
+
+.claro {
+  background: #ffffff;
+  color: #1a1a1a;
+}
+
+.oscuro {
+  background: #1a1a2e;
+  color: #f1f1f1;
+}
+
+.oscuro a {
+  color: #8ab4ff;
+}
+
+.oscuro .tarjeta {
+  border-color: #555;
+}
+
 .navbar {
   display: flex;
   gap: 16px;
@@ -26,4 +49,8 @@
 .navbar a.active {
   font-weight: bold;
   border-bottom: 2px solid;
+}
+
+body {
+  margin: 0;
 }

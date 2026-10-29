@@ -5,21 +5,27 @@ function TarjetaPelicula({ pelicula, onGuardar, onEliminar, onEditar }) {
         <div className="tarjeta">
             <h2>{pelicula.Title}</h2>
             <p>{pelicula.Year}</p>
-            <img src={pelicula.Poster} alt={pelicula.Title} />
+            <img src={pelicula.Poster} alt={pelicula.Title} onError={(e) => {
+                e.currentTarget.onerror = null;
+                e.currentTarget.src = "/sin-poster.jpg"
+            }}
+            />
 
             {pelicula.nota && <p>Nota: {pelicula.nota}</p>}
 
-            <Link to={`/peliculas/${pelicula.imdbID}`}>Ver detalle</Link>
+            <div className="acciones">
+                <Link to={`/peliculas/${pelicula.imdbID}`}>Ver detalle</Link>
 
-            {onGuardar && (
-                <button onClick={() => onGuardar(pelicula)}>Guardar</button>
-            )}
-            {onEliminar && (
-                <button onClick={() => onEliminar(pelicula.imdbID)}>Eliminar</button>
-            )}
-            {onEditar && (
-                <button onClick={() => onEditar(pelicula)}>Editar nota</button>
-            )}
+                {onGuardar && (
+                    <button onClick={() => onGuardar(pelicula)}>Guardar</button>
+                )}
+                {onEliminar && (
+                    <button onClick={() => onEliminar(pelicula.imdbID)}>Eliminar</button>
+                )}
+                {onEditar && (
+                    <button onClick={() => onEditar(pelicula)}>Editar nota</button>
+                )}
+            </div>
         </div>
     );
 }

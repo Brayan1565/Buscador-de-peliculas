@@ -1,56 +1,475 @@
-.tarjeta {
-  width: 170px;      
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-}
+/* Tipografía: una sola familia, limpia, parecida a la de la captura */
+@import url("https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap");
 
-.tarjeta img {
-  width: 150px;     
-  height: auto;     
-  border-radius: 8px; 
-}
-
-.peliculas {
-  display: flex;    
-  flex-wrap: wrap;    
-  gap: 16px;         
-}
-
-.app {
-  min-height: 100vh;
-  padding: 8px;
-}
-
-.claro {
-  background: #ffffff;
-  color: #1a1a1a;
-}
-
-.oscuro {
-  background: #1a1a2e;
-  color: #f1f1f1;
-}
-
-.oscuro a {
-  color: #8ab4ff;
-}
-
-.oscuro .tarjeta {
-  border-color: #555;
-}
-
-.navbar {
-  display: flex;
-  gap: 16px;
-  padding: 12px;
-}
-
-.navbar a.active {
-  font-weight: bold;
-  border-bottom: 2px solid;
+/* border-box: el ancho incluye padding y borde, así las medidas son más predecibles */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+}
+
+/* ---------- Temas: variables CSS ----------
+   Cada tema define los mismos nombres con colores distintos.
+   Al cambiar la clase de .app (claro u oscuro), cambia toda la página. */
+.claro {
+  --fondo: #eceef1;
+  --lateral-fondo: #ffffff;
+  --superficie: #ffffff;
+  --texto: #1c1f22;
+  --suave: #6b7178;
+  --borde: #d5d9de;
+  --acento: #d99200;
+  --acento-texto: #1a1400;
+}
+
+.oscuro {
+  --fondo: #262b2f;
+  --lateral-fondo: #181b1d;
+  --superficie: #1f2326;
+  --texto: #f2f3f4;
+  --suave: #8d949a;
+  --borde: #373d42;
+  --acento: #e5a00d;
+  --acento-texto: #1a1400;
+}
+
+/* ---------- Estructura: barra lateral + contenido ----------
+   .app es una cuadrícula de dos columnas: 220px para la barra (Navbar)
+   y el resto para la página que se esté mostrando. */
+.app {
+  --lateral: 220px;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: var(--lateral) minmax(0, 1fr);
+  background: var(--fondo);
+  color: var(--texto);
+  font-family: "Figtree", system-ui, sans-serif;
+  line-height: 1.5;
+}
+
+/* La página (el div que cuelga de .app) va siempre en la columna 2 */
+.app > div {
+  grid-column: 2;
+  padding: 28px 32px 120px;
+  /* min-width: 0 evita que contenido ancho rompa la cuadrícula */
+  min-width: 0;
+}
+
+/* Los títulos de sección van pequeños y en mayúsculas, como "MOST POPULAR" */
+.app h1 {
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+}
+
+.app a {
+  color: var(--acento);
+  text-underline-offset: 3px;
+}
+
+/* Foco visible para quien navega con teclado */
+.app :focus-visible {
+  outline: 2px solid var(--acento);
+  outline-offset: 2px;
+}
+
+/* ---------- Barra lateral (Navbar) ---------- */
+.navbar {
+  grid-column: 1;
+  /* sticky + height 100vh: la barra se queda fija al hacer scroll */
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+  background: var(--lateral-fondo);
+  border-right: 1px solid var(--borde);
+}
+
+.navbar a {
+  color: var(--suave);
+  text-decoration: none;
+  font-weight: 600;
+  padding: 12px 24px;
+  /* Barra transparente a la izquierda; en el enlace activo se pinta de color */
+  border-left: 3px solid transparent;
+}
+
+.navbar a:hover {
+  color: var(--texto);
+}
+
+/* NavLink pone la clase "active" al enlace de la ruta actual */
+.navbar a.active {
+  color: var(--texto);
+  background: rgba(128, 128, 128, 0.14);
+  border-left-color: var(--acento);
+}
+
+/* El botón de tema baja hasta el final de la barra (margin-top: auto) */
+.navbar button {
+  margin: auto 16px 8px;
+}
+
+/* ---------- Botones e inputs (compartidos) ---------- */
+.app button {
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: var(--texto);
+  background: transparent;
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 6px 12px;
+  transition: border-color 0.15s;
+}
+
+.app button:hover {
+  border-color: var(--acento);
+}
+
+.app input {
+  font: inherit;
+  color: var(--texto);
+  background: var(--lateral-fondo);
+  border: 1px solid var(--borde);
+  border-radius: 6px;
+  padding: 10px 14px;
+}
+
+.app input::placeholder {
+  color: var(--suave);
+}
+
+/* ---------- Buscador ---------- */
+.app input[type="search"] {
+  width: min(100%, 380px);
+  margin-bottom: 28px;
+}
+
+/* ---------- Cuadrícula de pósters ---------- */
+.peliculas {
+  /* Ancho de cada tarjeta; se usa también para calcular el alto del póster */
+  --ancho: 150px;
+  display: grid;
+  /* auto-fill: pone tantas columnas como quepan en la pantalla */
+  grid-template-columns: repeat(auto-fill, var(--ancho));
+  gap: 28px 20px;
+}
+
+/* ---------- Tarjeta: póster arriba, título y año debajo ---------- */
+.tarjeta {
+  width: var(--ancho);
+  display: flex;
+  flex-direction: column;
+}
+
+/* En el HTML el póster va después del título, pero con order: -1 se ve primero */
+.tarjeta img {
+  order: -1;
+  display: block;
+  width: 100%;
+  height: calc(var(--ancho) * 1.5); /* proporción 2:3, la de un póster */
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--superficie);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Al pasar el mouse, el póster se resalta con un borde del color de acento */
+.tarjeta:hover img {
+  transform: translateY(-3px);
+  box-shadow: 0 0 0 2px var(--acento);
+}
+
+/* Título: una sola línea; si es largo se corta con "..." */
+.tarjeta h2 {
+  margin: 10px 0 0;
+  font-size: 0.85rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Año (y nota) en gris y más pequeño */
+.tarjeta p {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--suave);
+}
+
+/* La nota personal es el <p> que viene después de la imagen */
+.tarjeta img ~ p {
+  margin-top: 4px;
+  font-style: italic;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.acciones a {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* El primer botón (Guardar o Eliminar) es la acción principal */
+.acciones button {
+  padding: 4px 10px;
+  font-size: 0.75rem;
+}
+
+.acciones button:first-of-type {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: var(--acento-texto);
+}
+
+/* ---------- Formulario de notas: panel fijo abajo ----------
+   Se centra sobre el contenido (descontando el ancho de la barra lateral) */
+.app form {
+  position: fixed;
+  bottom: 16px;
+  left: calc(50% + var(--lateral) / 2);
+  transform: translateX(-50%);
+  z-index: 20;
+  width: min(520px, calc(100% - var(--lateral) - 32px));
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 16px;
+  background: var(--lateral-fondo);
+  border: 1px solid var(--borde);
+  border-radius: 10px;
+  box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.6);
+}
+
+.app form p {
+  flex-basis: 100%;
+  margin: 0;
+  font-weight: 600;
+}
+
+.app form input {
+  flex: 1 1 200px;
+}
+
+.app form button[type="submit"] {
+  background: var(--acento);
+  border-color: var(--acento);
+  color: var(--acento-texto);
+}
+
+/* ---------- Detalle de la película ---------- */
+.detalle {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  column-gap: 40px;
+  align-content: start;
+}
+
+/* El botón va en la columna de los datos, alineado a la izquierda */
+.detalle > button {
+  grid-column: 2;
+  justify-self: start;
+  background: var(--acento);
+  border-color: var(--acento);
+  color: var(--acento-texto);
+}
+
+/* Si ya está guardada, el botón se ve apagado y sin cursor de clic */
+.detalle > button:disabled {
+  background: transparent;
+  border-color: var(--borde);
+  color: var(--suave);
+  cursor: default;
+}
+
+/* El enlace de volver y el título ocupan todo el ancho */
+.detalle > a,
+.detalle > h1 {
+  grid-column: 1 / -1;
+}
+
+/* El póster va en la primera columna, junto a los datos */
+.detalle > img {
+  grid-column: 1;
+  grid-row: 3 / span 6;
+  width: 100%;
+  border-radius: 6px;
+}
+
+.detalle > p {
+  grid-column: 2;
+  margin: 0 0 12px;
+  max-width: 62ch;
+}
+
+/* ---------- Mensajes ---------- */
+.error {
+  color: var(--acento);
+  font-weight: 600;
+}
+
+/* ---------- Pantallas pequeñas: la barra lateral pasa arriba ---------- */
+@media (max-width: 760px) {
+  .app {
+    --lateral: 0px;
+    grid-template-columns: 1fr;
+  }
+
+  .app > div {
+    grid-column: 1;
+    padding: 20px 16px 120px;
+  }
+
+  /* La barra se vuelve horizontal y se queda pegada arriba */
+  .navbar {
+    grid-column: 1;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+    padding: 0 8px;
+    border-right: none;
+    border-bottom: 1px solid var(--borde);
+  }
+
+  .navbar a {
+    padding: 14px 12px;
+    border-left: none;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+  }
+
+  .navbar a.active {
+    border-left-color: transparent;
+    border-bottom-color: var(--acento);
+    background: none;
+  }
+
+  .navbar button {
+    margin: 0 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .detalle {
+    grid-template-columns: 1fr;
+  }
+
+  .detalle > img,
+  .detalle > p {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .detalle > img {
+    max-width: 260px;
+    margin-bottom: 20px;
+  }
+}
+
+.inicio section {
+  margin-bottom: 40px;
+}
+
+/* Banner: un degradado suave con el color de acento */
+.hero {
+  padding: 40px 32px;
+  border-radius: 10px;
+  background: linear-gradient(
+    120deg,
+    color-mix(in srgb, var(--acento) 28%, var(--lateral-fondo)),
+    var(--lateral-fondo) 70%
+  );
+  border: 1px solid var(--borde);
+}
+
+/* Aquí el h1 es grande (en el resto de la app es pequeño) */
+.hero h1 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem);
+  letter-spacing: -0.02em;
+  text-transform: none;
+  margin: 0 0 12px;
+}
+
+.hero p {
+  max-width: 52ch;
+  margin: 0 0 24px;
+  color: var(--suave);
+}
+
+/* a.boton-principal es más específico que .app a, así que gana en el color */
+.app a.boton-principal {
+  display: inline-block;
+  padding: 10px 20px;
+  border-radius: 6px;
+  background: var(--acento);
+  color: var(--acento-texto);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.app a.boton-principal:hover {
+  filter: brightness(1.1);
+}
+
+/* Contadores */
+.stats {
+  display: flex;
+  gap: 16px;
+}
+
+.stats div {
+  display: flex;
+  flex-direction: column;
+  min-width: 120px;
+  padding: 14px 18px;
+  background: var(--lateral-fondo);
+  border: 1px solid var(--borde);
+  border-radius: 8px;
+}
+
+.stats strong {
+  font-size: 1.75rem;
+  line-height: 1.1;
+}
+
+.stats span {
+  font-size: 0.8rem;
+  color: var(--suave);
+}
+
+/* Títulos de cada fila, como "MOST POPULAR" */
+.inicio section > h2 {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vacio {
+  color: var(--suave);
+}
+
+/* Respeta a quien desactiva las animaciones en su sistema */
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta img {
+    transition: none;
+  }
+
+  .tarjeta:hover img {
+    transform: none;
+  }
 }

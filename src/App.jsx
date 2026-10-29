@@ -18,15 +18,21 @@ function App() {
     <div className={`app ${tema}`}>
       <Navbar />
       <Routes>
-        <Route path="/" element={<InicioPage />} />
+        <Route
+          path="/"
+          element={<InicioPage guardados={guardados} setGuardados={setGuardados} />}
+        />
         <Route
           path="/buscar"
           element={<BuscarPage guardados={guardados} setGuardados={setGuardados} />}
         />
-        <Route path="/peliculas/:id" element={<DetallePage />} />
-        <Route 
-        path="/favoritos"
-        element={<FavoritosPage guardados={guardados} setGuardados={setGuardados} />}
+        <Route
+          path="/peliculas/:id"
+          element={<DetallePage guardados={guardados} setGuardados={setGuardados} />}
+        />
+        <Route
+          path="/favoritos"
+          element={<FavoritosPage guardados={guardados} setGuardados={setGuardados} />}
         />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>

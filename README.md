@@ -1,16 +1,40 @@
-# React + Vite
+# Buscador de películas
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Aplicación hecha con React para buscar películas en la API de OMDB, ver sus detalles y guardar favoritas con una nota personal.
 
-Currently, two official plugins are available:
+**App publicada:** 
+[buscador-peliculas-f7631.web.app](https://buscador-peliculas-f7631.web.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Qué hace
 
-## React Compiler
+- **Inicio:** resumen de tus películas guardadas y sugerencias al azar.
+- **Buscar:** búsqueda con retraso (debounce) para no pedir datos en cada tecla.
+- **Detalle:** ruta dinámica `/peliculas/:id` con sinopsis, género, director y calificación.
+- **Favoritos:** películas guardadas, con opción de editar la nota o eliminarlas.
+- Tema claro y oscuro, y los favoritos se guardan en `localStorage`.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologías
 
-## Expanding the ESLint configuration
+React, Vite, React Router, Context API, hooks personalizados (`useFetch`, `useDebounce`, `useLocalStorage`) y la API de OMDB.
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Cómo ejecutarlo
+
+1. Instala las dependencias: `npm install`
+2. Consigue una clave gratuita en https://www.omdbapi.com/apikey.aspx
+3. Copia `.env.example` como `.env.local` y pega tu clave en `VITE_OMDB_KEY`
+4. Inicia la app: `npm run dev`
+
+## Estructura
+
+```
+src/
+  components/   Piezas reutilizables (tarjeta, lista, formulario...)
+  context/      Contexto del tema claro/oscuro
+  hooks/        useFetch, useDebounce, useLocalStorage
+  pages/        Inicio, Buscar, Detalle, Favoritos y 404
+  utils/        Adaptador de datos de la API
+```
+
+## Autor
+
+Brayan Sierra

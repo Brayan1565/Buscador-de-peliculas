@@ -12,11 +12,15 @@ function FormularioNota({ titulo, notaInicial = "", onSubmitNota, onCancelar }) 
     return (
         <form onSubmit={manejarSubmit}>
             <p>Nota para: {titulo}</p>
+
             <input
+                autoFocus
                 value={nota}
                 onChange={(evento) => setNota(evento.target.value)}
                 placeholder="Escribe tu nota"
+
             />
+
             <button type="submit">Guardar</button>
             <button type="button" onClick={onCancelar}>Cancelar</button>
         </form>

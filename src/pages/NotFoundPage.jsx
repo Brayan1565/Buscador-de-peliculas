@@ -4,7 +4,7 @@ function NotFoundPage() {
     return (
         <div>
             <h1>404</h1>
-            <p>Esta pagina no existe.</p>
+            <p>Esta página no existe.</p>
             <Link to="/">Volver al inicio</Link>
         </div>
     );

@@ -4,7 +4,7 @@ function Buscador({ valor, onBuscar }) {
             type="search"
             value={valor}
             onChange={(evento) => onBuscar(evento.target.value)}
-            placeholder="Buscar pelicula..."
+            placeholder="Buscar película..."
         />
     );
 }
